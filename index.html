@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manual Ético Interactivo</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root {
+  --primary: #1b4332;
+  --primary-light: #2d6a4f;
+  --accent: #52b788;
+  --accent-glow: #74c69d;
+  --bg-sidebar: #ffffff;
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background: #081c15;
+}
+
+/* Header */
+header {
+  background: rgba(27, 67, 50, 0.95);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  padding: 16px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+header h1 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+header p {
+  font-size: 0.9rem;
+  color: #b7e4c7;
+}
+
+/* Main Layout */
+main {
+  display: flex;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Sidebar */
+aside {
+  width: 400px;
+  background: var(--bg-sidebar);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 5px 0 25px rgba(0,0,0,0.08);
+  z-index: 5;
+  overflow-y: auto;
+}
+
+aside h2 {
+  font-size: 1.2rem;
+  color: var(--primary);
+  margin-bottom: 16px;
+}
+
+/* Progress Card */
+.progress-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 18px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.stats-row span strong {
+  color: var(--primary);
+  font-size: 1.1rem;
+}
+
+.progress-bar-bg {
+  height: 10px;
+  background: #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--primary-light) 100%);
+  border-radius: 10px;
+  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.msg {
+  font-size: 0.85rem;
+  color: var(--primary-light);
+  font-weight: 500;
+}
+
+/* Lista de Temas */
+#list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.topic-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid #edf2f7;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  user-select: none;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+}
+
+.topic-card:hover:not(.locked) {
+  background: #f0fdf4;
+  border-color: var(--accent-glow);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(82, 183, 136, 0.15);
+}
+
+.topic-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.topic-number {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.topic-card.completed .topic-number {
+  background: var(--accent);
+  color: #fff;
+}
+
+.topic-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.action-btn {
+  background: transparent;
+  border: none;
+  color: var(--primary-light);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+/* Tarjeta Bloqueada / Coming Soon */
+.topic-card.locked {
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+.topic-card.locked .topic-title {
+  color: #94a3b8;
+}
+
+.badge-coming {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: #e2e8f0;
+  color: #64748b;
+  padding: 4px 8px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+/* Escenario Jardín */
+#garden {
+  flex: 1;
+  position: relative;
+  background: linear-gradient(to bottom, #80ed99 0%, #c7f9cc 45%, #52b788 100%);
+  overflow: hidden;
+}
+
+.sun {
+  position: absolute;
+  top: 40px;
+  right: 60px;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, #fff7ed 20%, #fde047 60%, rgba(253, 224, 71, 0) 100%);
+  border-radius: 50%;
+  box-shadow: 0 0 60px #fef08a, 0 0 100px #fde047;
+  animation: pulse-sun 4s infinite alternate;
+}
+
+@keyframes pulse-sun {
+  0% { transform: scale(0.98); opacity: 0.9; }
+  100% { transform: scale(1.05); opacity: 1; }
+}
+
+.cloud {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 50px;
+  backdrop-filter: blur(4px);
+  animation: floatCloud linear infinite;
+}
+
+.cloud::before, .cloud::after {
+  content: '';
+  position: absolute;
+  background: inherit;
+  border-radius: 50%;
+}
+
+.cloud-1 { width: 140px; height: 45px; top: 60px; animation-duration: 35s; }
+.cloud-1::before { width: 50px; height: 50px; top: -20px; left: 20px; }
+.cloud-1::after { width: 70px; height: 70px; top: -35px; left: 50px; }
+
+.cloud-2 { width: 100px; height: 35px; top: 120px; animation-duration: 25s; opacity: 0.7; }
+.cloud-2::before { width: 40px; height: 40px; top: -15px; left: 15px; }
+.cloud-2::after { width: 50px; height: 50px; top: -25px; left: 35px; }
+
+@keyframes floatCloud {
+  from { left: -200px; }
+  to { left: 100%; }
+}
+
+.hill-back {
+  position: absolute;
+  bottom: 0;
+  width: 120%;
+  left: -10%;
+  height: 35%;
+  background: #40916c;
+  border-top-left-radius: 50% 100%;
+  border-top-right-radius: 50% 100%;
+}
+
+.hill-front {
+  position: absolute;
+  bottom: 0;
+  width: 110%;
+  left: -5%;
+  height: 25%;
+  background: #2d6a4f;
+  border-top-left-radius: 60% 100%;
+  border-top-right-radius: 40% 100%;
+  box-shadow: 0 -10px 20px rgba(0,0,0,0.05);
+}
+
+#plants {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.plant-wrapper {
+  position: absolute;
+  transform-origin: bottom center;
+  animation: growPlant 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, sway 4s ease-in-out infinite alternate;
+}
+
+@keyframes growPlant {
+  0% { transform: scale(0) translateY(50px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+@keyframes sway {
+  0% { transform: rotate(-1.5deg); }
+  100% { transform: rotate(1.5deg); }
+}
+
+/* Modal de Explicación del Tema */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 28, 21, 0.6);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal-card {
+  background: #ffffff;
+  width: 90%;
+  max-width: 540px;
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+  transform: translateY(20px) scale(0.95);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+}
+
+.modal-overlay.active .modal-card {
+  transform: translateY(0) scale(1);
+}
+
+.close-modal {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #f1f5f9;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.close-modal:hover {
+  background: #e2e8f0;
+  color: var(--text-main);
+}
+
+.modal-tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.modal-title {
+  font-size: 1.4rem;
+  color: var(--primary);
+  margin-bottom: 14px;
+  font-weight: 700;
+}
+
+.modal-desc {
+  font-size: 0.95rem;
+  color: #334155;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+/* Badges de influenciadores */
+.influencers-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.influencer-pill {
+  background: #f0fdf4;
+  color: var(--primary-light);
+  border: 1px solid #b7e4c7;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+/* Caja de Cita / Frase */
+.quote-box {
+  background: #f8fafc;
+  border-left: 4px solid var(--accent);
+  padding: 16px 20px;
+  border-radius: 0 12px 12px 0;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.quote-box p {
+  font-size: 0.92rem;
+  font-style: italic;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.quote-box i {
+  color: var(--accent);
+  font-size: 1.2rem;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-complete {
+  flex: 1;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--primary-light) 100%);
+  color: #fff;
+  border: none;
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(82, 183, 136, 0.3);
+  transition: all 0.2s ease;
+}
+
+.btn-complete:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(82, 183, 136, 0.4);
+}
+
+.btn-complete.completed {
+  background: #e2e8f0;
+  color: #64748b;
+  box-shadow: none;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1><i class="fa-solid fa-leaf" style="color:#74c69d"></i> Manual Ético Interactivo</h1>
+  <p>Cultivando principios y valores</p>
+</header>
+
+<main>
+  <aside>
+    <h2>Módulos Éticos</h2>
+    
+    <div class="progress-card">
+      <div class="stats-row">
+        <span>Progreso del Jardín</span>
+        <span><strong id="pct">0</strong>%</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="bar" id="bar"></div>
+      </div>
+      <div class="stats-row" style="margin-bottom:0">
+        <span style="font-size:0.8rem">Cultivados: <strong id="count">0</strong>/2</span>
+      </div>
+      <div class="msg" id="msg" style="margin-top:10px">Selecciona un tema para explorar y hacer crecer tu jardín.</div>
+    </div>
+
+    <div id="list"></div>
+  </aside>
+
+  <section id="garden">
+    <div class="sun"></div>
+    <div class="cloud cloud-1"></div>
+    <div class="cloud cloud-2"></div>
+    <div class="hill-back"></div>
+    <div class="hill-front"></div>
+    <div id="plants"></div>
+  </section>
+</main>
+
+<!-- Modal de Detalle / Explicación del Tema -->
+<div class="modal-overlay" id="topicModal">
+  <div class="modal-card">
+    <button class="close-modal" id="closeModalBtn"><i class="fa-solid fa-xmark"></i></button>
+    <div class="modal-tag" id="modalTag">Tema Ético</div>
+    <h3 class="modal-title" id="modalTitle">Título del Tema</h3>
+    <p class="modal-desc" id="modalDesc">Explicación breve del tema.</p>
+
+    <div id="influencersContainer" style="display:none;">
+      <p style="font-size: 0.8rem; font-weight: 700; color: #64748b; margin-bottom: 8px; text-transform: uppercase;" id="modalDescT">Titulo de Aspectos importantes.</p>
+      <div class="influencers-grid" id="influencersList"></div>
+    </div>
+
+    <div class="quote-box">
+      <i class="fa-solid fa-quote-left"></i>
+      <p id="modalQuote">"Frase personalizada sobre el tema aquí."</p>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-complete" id="toggleCompleteBtn">
+        <i class="fa-solid fa-seedling"></i> <span id="btnText">Marcar como Completado</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Definición de Temas Sintetizados
+const topicsData = [
+  {
+    id: 0,
+    title: "Conducta y paradigmas",
+     shortDesc: "Los paradigmas son modelos mentales que influyen en la manera en que interpretamos la realidad, actuamos y tomamos decisiones. Comprenderlos permite reconocer cómo se forman nuestros comportamientos y desarrollar una conducta ética basada en la reflexión, el aprendizaje y la mejora continua.",
+    shortDescT: "Como cambiar los paradigmas:",
+    influencers: ["Inconsciente - Incorrecto","Consciente - Incorrecto","Consciente - Correcto","Inconsciente - Correcto"],
+    quote: "Lo que la da poder al paradigma es la creencia que hay en la mente.",
+    sectionTitle: "Aspectos importantes",
+    locked: false,
+    // Planta 1: Gran Árbol Ético Frondoso (SVG sin emojis)
+    plantSVG: `
+      <svg width="140" height="180" viewBox="0 0 140 180">
+        <path d="M70 180 Q 65 120 70 90" stroke="#4a3728" stroke-width="16" stroke-linecap="round"/>
+        <circle cx="70" cy="70" r="45" fill="#2d6a4f"/>
+        <circle cx="45" cy="60" r="32" fill="#40916c"/>
+        <circle cx="95" cy="60" r="32" fill="#52b788"/>
+        <circle cx="70" cy="40" r="28" fill="#74c69d"/>
+        <circle cx="55" cy="80" r="10" fill="#95d5b2"/>
+        <circle cx="85" cy="85" r="8" fill="#b7e4c7"/>
+      </svg>`
+  },
+  {
+    id: 1,
+    title: "La realidad y la ética",
+    shortDesc: "Analiza la influencia cultural en la conducta humana y los fundamentos de la ética y la moral, comprendiendo la relación entre el ser, como la realidad de nuestras acciones, y el deber ser, como los principios que orientan cómo debemos actuar.",
+    shortDescT: "Grandes influenciadores de la cultura:",
+    influencers: [
+      "A nivel personal", 
+      "A nivel familiar", 
+      "La educación", 
+      "La economía", 
+      "Gobierno", 
+      "La religión", 
+      "Medios de comunicación", 
+      "Entretenimiento"
+    ],
+    quote: "Decido no dejarme para despues, me necesito ahora.",
+    locked: false,
+    // Planta 2: Planta Floreciente con múltiples brotes y flores brillantes
+    plantSVG: `
+      <svg width="130" height="170" viewBox="0 0 130 170">
+        <path d="M65 170 Q 50 110 65 50" stroke="#2d6a4f" stroke-width="8" fill="none"/>
+        <path d="M65 110 Q 25 90 20 70 Q 55 80 65 110" fill="#52b788"/>
+        <path d="M65 90 Q 105 70 110 50 Q 75 60 65 90" fill="#40916c"/>
+        <!-- Flor Principal -->
+        <g fill="#ffb703">
+          <circle cx="65" cy="40" r="22" fill="#ffb703"/>
+          <circle cx="65" cy="40" r="10" fill="#6c584c"/>
+          <circle cx="45" cy="40" r="8" fill="#fb8500"/>
+          <circle cx="85" cy="40" r="8" fill="#fb8500"/>
+          <circle cx="65" cy="20" r="8" fill="#fb8500"/>
+          <circle cx="65" cy="60" r="8" fill="#fb8500"/>
+        </g>
+        <!-- Capullos secundarios -->
+        <circle cx="20" cy="70" r="10" fill="#ff4d6d"/>
+        <circle cx="110" cy="50" r="10" fill="#ff758f"/>
+      </svg>`
+  },
+  {
+    id: 2,
+    title: "Mas Temas",
+    shortDesc: "Próximamente disponible. Profundizaremos en la fundamentación de la ética, los valores morales y la dignidad humana.",
+    influencers: [],
+    quote: "Módulo en desarrollo.",
+    locked: true,
+    plantSVG: null
+  }
+];
+
+const list = document.getElementById("list");
+const plants = document.getElementById("plants");
+const modal = document.getElementById("topicModal");
+
+let state = JSON.parse(localStorage.getItem("ethicGardenV3") || "[false, false]");
+let currentActiveTopic = null;
+
+function save() {
+  localStorage.setItem("ethicGardenV3", JSON.stringify(state));
+}
+
+function render() {
+  list.innerHTML = "";
+  plants.innerHTML = "";
+
+  const availableTopics = topicsData.filter(t => !t.locked);
+
+  topicsData.forEach((topic, idx) => {
+    const card = document.createElement("div");
+    
+    if (topic.locked) {
+      card.className = "topic-card locked";
+      card.innerHTML = `
+        <div class="topic-info">
+          <div class="topic-number"><i class="fa-solid fa-lock" style="font-size:0.75rem"></i></div>
+          <span class="topic-title">${topic.title}</span>
+        </div>
+        <span class="badge-coming">Próximamente</span>
+      `;
+    } else {
+      const isDone = state[topic.id];
+      card.className = `topic-card ${isDone ? 'completed' : ''}`;
+      card.innerHTML = `
+        <div class="topic-info">
+          <div class="topic-number">${isDone ? '<i class="fa-solid fa-check"></i>' : topic.id + 1}</div>
+          <span class="topic-title">${topic.title}</span>
+        </div>
+        <button class="action-btn"><i class="fa-solid fa-chevron-right"></i></button>
+      `;
+      card.onclick = () => openModal(topic.id);
+    }
+    
+    list.appendChild(card);
+  });
+
+  // Cálculo de Progreso
+  const doneCount = state.filter(Boolean).length;
+  const pct = Math.round((doneCount / availableTopics.length) * 100);
+
+  document.getElementById("pct").textContent = pct;
+  document.getElementById("count").textContent = doneCount;
+  document.getElementById("bar").style.width = pct + "%";
+
+  const msg = document.getElementById("msg");
+  if (doneCount === availableTopics.length) {
+    msg.textContent = "¡Excelente! Tu jardín ético ha florecido con éxito.";
+  } else if (doneCount > 0) {
+    msg.textContent = `Has cultivado ${doneCount} módulo(s). ¡Continúa explorando!`;
+  } else {
+    msg.textContent = "Haz clic en un tema para estudiarlo y hacer crecer el jardín.";
+  }
+
+  // Renderizado de plantas en el jardín
+  let plantedIndex = 0;
+  state.forEach((active, i) => {
+    if (active && topicsData[i] && topicsData[i].plantSVG) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "plant-wrapper";
+      wrapper.innerHTML = topicsData[i].plantSVG;
+
+      // Posicionamiento estético en la colina
+      const positions = [
+        { left: '28%', bottom: '35px' },
+        { left: '62%', bottom: '25px' }
+      ];
+
+      const pos = positions[plantedIndex] || { left: '45%', bottom: '30px' };
+      wrapper.style.left = pos.left;
+      wrapper.style.bottom = pos.bottom;
+      wrapper.style.animationDelay = `${plantedIndex * 0.2}s, ${Math.random() * 2}s`;
+
+      plants.appendChild(wrapper);
+      plantedIndex++;
+    }
+  });
+}
+
+// Abrir Modal de Explicación
+function openModal(id) {
+  const topic = topicsData.find(t => t.id === id);
+  if (!topic || topic.locked) return;
+
+  currentActiveTopic = id;
+  document.getElementById("modalTag").textContent = `Módulo ${id + 1}`;
+  document.getElementById("modalTitle").textContent = topic.title;
+  document.getElementById("modalDescT").textContent = topic.shortDescT;
+  document.getElementById("modalDesc").textContent = topic.shortDesc;
+  document.getElementById("modalQuote").textContent = topic.quote;
+
+  // Renderizar pills de influenciadores si existen
+  const infContainer = document.getElementById("influencersContainer");
+  const infList = document.getElementById("influencersList");
+  
+  if (topic.influencers && topic.influencers.length > 0) {
+    infList.innerHTML = topic.influencers.map(item => `<span class="influencer-pill">${item}</span>`).join('');
+    infContainer.style.display = "block";
+  } else {
+    infContainer.style.display = "none";
+  }
+
+  updateModalButton();
+  modal.classList.add("active");
+}
+
+// Actualizar estado del botón en el modal
+function updateModalButton() {
+  const isDone = state[currentActiveTopic];
+  const btn = document.getElementById("toggleCompleteBtn");
+  const btnText = document.getElementById("btnText");
+
+  if (isDone) {
+    btn.className = "btn-complete completed";
+    btnText.textContent = "Tema Completado (Hacer clic para desmarcar)";
+  } else {
+    btn.className = "btn-complete";
+    btnText.textContent = "Cultivar Planta / Marcar como Completado";
+  }
+}
+
+// Eventos
+document.getElementById("closeModalBtn").onclick = () => modal.classList.remove("active");
+
+modal.onclick = (e) => {
+  if (e.target === modal) modal.classList.remove("active");
+};
+
+document.getElementById("toggleCompleteBtn").onclick = () => {
+  if (currentActiveTopic !== null) {
+    state[currentActiveTopic] = !state[currentActiveTopic];
+    save();
+    updateModalButton();
+    render();
+    modal.classList.remove("active");
+  }
+};
+
+render();
+</script>
+</body>
+</html>
